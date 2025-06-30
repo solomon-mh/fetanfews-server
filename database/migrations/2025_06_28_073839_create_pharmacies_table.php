@@ -1,0 +1,39 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('pharmacies', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('address');
+            $table->string('phone');
+            $table->string('email')->unique();
+            $table->string('website')->nullable();
+            $table->string('operating_hours');
+            $table->string('latitude');
+            $table->string('longitude');
+            $table->string('image');
+            $table->string('status')->default('Pending');
+            $table->boolean('is_verified');
+            $table->boolean('delivery_available');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('pharmacies');
+    }
+};
