@@ -8,59 +8,52 @@ use Illuminate\Http\Request;
 
 class PharmacyController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        return response()->json(PharmacyResource::collection(Pharmacy::all())->resolve(),200);
+        return response()->json(PharmacyResource::collection(Pharmacy::with('medications')->get())->resolve(),200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Pharmacy $pharmacy)
     {
-        //
+        $pharmacy->load('medications');
+        return response()->json(new PharmacyResource($pharmacy), 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Pharmacy $pharmacy)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request, Pharmacy $pharmacy)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Pharmacy $pharmacy)
     {
         //
+    }
+    public function search(Request $request){
+        $search = $request->query('pharmacy');
+        $pharmacies = Pharmacy::query()->when($search, function($query,$search){
+            $query->where('name','like','%'. $search . '%');
+        })->get();
+
+         if ($pharmacies->isEmpty()) {
+        return response()->json(['message' => 'No pharmacies found'], 404);
+        }
+        return response()->json($pharmacies);
     }
 }
