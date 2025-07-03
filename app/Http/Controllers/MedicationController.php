@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Medication;
 use Illuminate\Http\Request;
+use App\Models\Pharmacy;
 
 
 class MedicationController extends Controller
@@ -50,9 +51,12 @@ class MedicationController extends Controller
     }
     public function search(Request $request){
         $search = $request->query('medication');
-        $medicaitons = Medication::query()->when($search, function($query,$search){
-            $query->where('name', 'like', '%'. $search . '%');
-        })->get();
-        return response()->json($medicaitons);
+       $medications = Medication::with('pharmacies')
+    ->when($search, function ($query, $search) {
+        $query->where('name', 'like', '%' . $search . '%');
+     })
+      ->get();
+
+        return response()->json($medications);
     }
 }
