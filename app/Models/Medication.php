@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\pharmacy;
+use App\Models\Pharmacy;
 
 class Medication extends Model
 {
     use HasFactory;
     protected $guarded = [];
-    public function pharmacy(){
-        return $this->belongsTo(Pharmacy::class);
+    public function pharmacies(){
+        return $this->belongsToMany(Pharmacy::class)->withPivot(['price','stock_quantity','stock_status','quantity_available','manufacturer'])->withTimeStamps();
     }
 }
