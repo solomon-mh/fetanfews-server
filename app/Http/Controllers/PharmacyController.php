@@ -47,12 +47,12 @@ class PharmacyController extends Controller
     }
     public function search(Request $request){
         $search = $request->query('pharmacy');
-        $pharmacies = Pharmacy::query()->when($search, function($query,$search){
+        $pharmacies = Pharmacy::with('medications')->when($search, function($query,$search){
             $query->where('name','like','%'. $search . '%');
         })->get();
 
          if ($pharmacies->isEmpty()) {
-        return response()->json(['message' => 'No pharmacies found'], 404);
+        return response()->json([]);
         }
         return response()->json($pharmacies);
     }
