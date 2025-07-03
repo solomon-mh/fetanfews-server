@@ -14,6 +14,6 @@ class Pharmacy extends Model
     ];
 
     public function medications(){
-        return $this->hasMany(Medication::class);
+        return $this->belongsToMany(Medication::class)->withPivot(['price','stock_quantity','stock_status','quantity_available','manufacturer'])->withTimeStamps();
     }
 };
