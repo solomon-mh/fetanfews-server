@@ -43,22 +43,24 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 
-    // Pharmacies API
-    
-    Route::prefix('pharmacies')->group(function () {
-        Route::get('/', [PharmacyController::class, 'index']);
-        
-        Route::get('/browse_by_categories', [PharmacyController::class, function(){
-            return [];
-        }]);
-        
-        Route::get('/most-searched-medications', [PharmacyController::class, function(){
-            return ['Good response'];
-        }]); 
-        Route::get('/search', [PharmacyController::class, 'search']); 
-        Route::get('/{pharmacy}', [PharmacyController::class, 'show']);
+// Pharmacies API
+
+Route::prefix('pharmacies')->group(function () {
+    Route::get('/', [PharmacyController::class, 'index']);
+
+    Route::get('/browse_by_categories', [PharmacyController::class, function () {
+        return [];
+    }]);
+
+    Route::get('/most-searched-medications', [PharmacyController::class, function () {
+        return ['Good response'];
+    }]);
+    Route::get('/search', [PharmacyController::class, 'searchPharmacy']);
+    Route::get('/{pharmacy}/medications/search', [PharmacyController::class, 'searchPharmacyMedications']);
+    Route::get('/{pharmacy}/medications/{medication}', [PharmacyController::class, 'medicationDetail']);
+    Route::get('/{pharmacy}', [PharmacyController::class, 'show']);
 });
-    // Medications API
-   Route::prefix('medications')->group(function() {
-    Route::get('/search', [MedicationController::class,'search']);
-   });
+// Medications API
+Route::prefix('medications')->group(function () {
+    Route::get('/search', [MedicationController::class, 'search']);
+});
