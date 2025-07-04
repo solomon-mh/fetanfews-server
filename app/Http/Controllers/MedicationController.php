@@ -9,13 +9,13 @@ use App\Models\Pharmacy;
 
 class MedicationController extends Controller
 {
-   
+
     public function index()
     {
         //
     }
 
-   
+
     public function create()
     {
         //
@@ -26,19 +26,19 @@ class MedicationController extends Controller
         //
     }
 
-    
+
     public function show(Medication $medication)
     {
         //
     }
 
- 
+
     public function edit(Medication $medication)
     {
         //
     }
 
-   
+
     public function update(Request $request, Medication $medication)
     {
         //
@@ -49,13 +49,14 @@ class MedicationController extends Controller
     {
         //
     }
-    public function search(Request $request){
+    public function search(Request $request)
+    {
         $search = $request->query('medication');
-       $medications = Medication::with('pharmacies')
-    ->when($search, function ($query, $search) {
-        $query->where('name', 'like', '%' . $search . '%');
-     })
-      ->get();
+        $medications = Medication::with('pharmacies')
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->get();
 
         return response()->json($medications);
     }
