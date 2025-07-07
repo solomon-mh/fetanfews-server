@@ -55,6 +55,7 @@ Route::prefix('pharmacies')->group(function () {
     Route::get('/most-searched-medications', [PharmacyController::class, function () {
         return ['Good response'];
     }]);
+    Route::get('/nearby', [PharmacyController::class, 'getNearby']);
     Route::get('/search', [PharmacyController::class, 'searchPharmacy']);
     Route::get('/{pharmacy}/medications/search', [PharmacyController::class, 'searchPharmacyMedications']);
     Route::get('/{pharmacy}/medications/{medication}', [PharmacyController::class, 'medicationDetail']);
