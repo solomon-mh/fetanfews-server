@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('website')->nullable();
             $table->string('operating_hours');
-            $table->string('latitude');
-            $table->string('longitude');
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
             $table->string('image');
             $table->string('status')->default('Pending');
             $table->boolean('is_verified');
