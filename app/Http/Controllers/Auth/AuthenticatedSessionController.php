@@ -4,53 +4,52 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Handle an incoming authentication request.
-     */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         $request->validate([
-            'username'=>['required','string'],
-            'password'=>['required','string']
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string']
         ]);
-        $login_type = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone_number';
+
+        $login_type = filter_var($request->username, FILTER_VALIDATE_EMAIL)
+            ? 'email'
+            : 'phone_number';
 
         $credentials = [
-        $login_type => $request->username,
-        'password' => $request->password,
+            $login_type => $request->username,
+            'password' => $request->password,
         ];
-       if (Auth::attempt($credentials)) {
+
+        if (!Auth::attempt($credentials)) {
+            return response()->json([
+                'message' => 'Invalid Credentials'
+            ], 401);
+        }
+
+        $user = Auth::user();
+
+        /** @var \App\Models\User $user **/
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
             'message' => 'Login successful',
-            'user' => Auth::user()
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user
         ]);
-       }
-        $request->authenticate();
-
-        $request->session()->regenerate();
-
-    return response()->json([
-        'message' => 'Invalid credentials'
-    ], 401);
-
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
-    public function destroy(Request $request): Response
+    public function destroy(Request $request)
     {
-        Auth::guard('web')->logout();
+        Auth::logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return response()->noContent();
+        return response()->json(['message' => 'Logged out']);
     }
 }
