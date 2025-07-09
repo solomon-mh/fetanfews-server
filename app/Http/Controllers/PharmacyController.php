@@ -84,23 +84,24 @@ class PharmacyController extends Controller
 
     public function getNearby(Request $request)
     {
-        $latitude = $request->query('latitude');
-        $longitude = $request->query('longitude');
-        $lowerLimit = $request->query('lower_limit', 0);
-        $upperLimit = $request->query('upper_limit', 100);
+        $validated = $request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'lower_limit' => 'required|numeric|min:0',
+            'upper_limit' => 'required|numeric|gt:lower_limit',
+        ]);
 
-        $subquery = DB::table('pharmacies')
-            ->select('*', DB::raw("(
-            6371 * acos(
-                cos(radians($latitude)) * cos(radians(latitude)) *
-                cos(radians(longitude) - radians($longitude)) +
-                sin(radians($latitude)) * sin(radians(latitude))
+        $pharmacies = DB::table('pharmacies')
+            ->select('*')
+            ->selectRaw(
+                '(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))) AS distance',
+                [
+                    $validated['latitude'],
+                    $validated['longitude'],
+                    $validated['latitude']
+                ]
             )
-        ) as distance"));
-
-        $pharmacies = DB::table(DB::raw("({$subquery->toSql()}) as sub"))
-            ->mergeBindings($subquery)
-            ->whereBetween('distance', [$lowerLimit, $upperLimit])
+            ->havingBetween('distance', [$validated['lower_limit'], $validated['upper_limit']])
             ->orderBy('distance')
             ->get();
 
