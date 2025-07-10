@@ -80,4 +80,5 @@ Route::prefix('medications')->group(function () {
 
 Route::prefix('categories')->group(function () {
     Route::get('/', [CategoryController::class, 'index']);
+    Route::post('/', [CategoryController::class, 'store']);
 });
