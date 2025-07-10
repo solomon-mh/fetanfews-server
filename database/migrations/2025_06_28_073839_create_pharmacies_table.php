@@ -13,17 +13,20 @@ return new class extends Migration
     {
         Schema::create('pharmacies', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->unique()->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('address');
-            $table->string('phone');
+            $table->string('phone')->unique();
             $table->string('email')->unique();
             $table->string('website')->nullable();
             $table->string('operating_hours');
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
-            $table->string('image');
+            $table->string('image')->nullable();
+            $table->string('license_number');
+            $table->string('license_image');
             $table->string('status')->default('Pending');
-            $table->boolean('is_verified');
+            $table->boolean('is_verified')->default(false);
             $table->boolean('delivery_available');
             $table->timestamps();
         });
