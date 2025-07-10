@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\MedicationController;
 
@@ -47,21 +48,36 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::prefix('pharmacies')->group(function () {
     Route::get('/', [PharmacyController::class, 'index']);
-
     Route::get('/browse_by_categories', [PharmacyController::class, function () {
         return [];
     }]);
-
     Route::get('/most-searched-medications', [PharmacyController::class, function () {
         return ['Good response'];
     }]);
     Route::get('/nearby', [PharmacyController::class, 'getNearby']);
+    Route::get('/counts', [PharmacyController::class, function () {
+        return '100';
+    }]);
     Route::get('/search', [PharmacyController::class, 'searchPharmacy']);
     Route::get('/{pharmacy}/medications/search', [PharmacyController::class, 'searchPharmacyMedications']);
     Route::get('/{pharmacy}/medications/{medication}', [PharmacyController::class, 'medicationDetail']);
     Route::get('/{pharmacy}', [PharmacyController::class, 'show']);
+    Route::post('/', [PharmacyController::class, 'store']);
 });
 // Medications API
 Route::prefix('medications')->group(function () {
+    Route::post('/', [MedicationController::class, 'store']);
+    Route::put('/{medication}', [MedicationController::class, 'update']);
+    Route::get('/', [MedicationController::class, 'index']);
+    Route::delete('/{medication}', [MedicationController::class, 'destroy']);
+    Route::get('/counts', [MedicationController::class, function () {
+        return '100';
+    }]);
     Route::get('/search', [MedicationController::class, 'search']);
+});
+
+// Categories Api
+
+Route::prefix('categories')->group(function () {
+    Route::get('/', [CategoryController::class, 'index']);
 });
