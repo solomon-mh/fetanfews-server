@@ -17,7 +17,7 @@ class AuthenticatedSessionController extends Controller
 
         $login_type = filter_var($request->username, FILTER_VALIDATE_EMAIL)
             ? 'email'
-            : 'phone_number';
+            : 'phone';
 
         $credentials = [
             $login_type => $request->username,
