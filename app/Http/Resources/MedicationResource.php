@@ -24,7 +24,6 @@ class MedicationResource extends JsonResource
                     'id' => $pharmacy->id,
                     'name' => $pharmacy->name,
                     'price' => $pharmacy->pivot->price,
-                    'stock_quantity' => $pharmacy->pivot->stock_quantity,
                     'stock_status' => $pharmacy->pivot->stock_status,
                     'quantity_available' => $pharmacy->pivot->quantity_available,
                     'manufacturer' => $pharmacy->pivot->manufacturer,
