@@ -22,13 +22,12 @@ class DatabaseSeeder extends Seeder
         $this->call(CategorySeeder::class);
 
         $this->seedMedicationPharmacyPivot();
-
     }
     private function seedMedicationPharmacyPivot(): void
     {
         $medications = Medication::all();
         $pharmacies = Pharmacy::all();
-       $faker = Faker::create();
+        $faker = Faker::create();
 
         foreach ($medications as $medication) {
             // Pick 1 to 3 random pharmacies for this medication
@@ -37,10 +36,9 @@ class DatabaseSeeder extends Seeder
             foreach ($selectedPharmacies as $pharmacy) {
                 $medication->pharmacies()->attach($pharmacy->id, [
                     'price' => rand(5, 20),
-                    'stock_quantity' => rand(0, 100),
-                    'stock_status' =>(bool)(rand(0,1)),
+                    'stock_status' => (bool)(rand(0, 1)),
                     'quantity_available' => rand(0, 20),
-                    'manufacturer'=>$faker->company
+                    'manufacturer' => $faker->company
                 ]);
             }
         }
