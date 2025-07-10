@@ -23,6 +23,8 @@ class User extends Authenticatable
         'last_name',
         'email',
         'password',
+        'phone',
+        'role'
     ];
 
     /**
@@ -46,5 +48,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function pharmacies()
+    {
+        return $this->hasOne(Pharmacy::class)->withTimeStamps();
     }
 }
