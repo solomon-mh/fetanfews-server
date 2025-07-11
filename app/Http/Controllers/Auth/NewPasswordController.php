@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
@@ -27,7 +29,7 @@ class NewPasswordController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
+        // Here we will attempt to reset the 's password. If it is successful we
         // will update the password on an actual user model and persist it to the
         // database. Otherwise we will parse the error and return the response.
         $status = Password::reset(
@@ -49,5 +51,28 @@ class NewPasswordController extends Controller
         }
 
         return response()->json(['status' => __($status)]);
+    }
+    public function change(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'current_password' => ['required'],
+                'new_password' => ['required', 'confirmed'],
+            ]);
+            $user = Auth::user();
+            if (!$user || !Hash::check($validated['current_password'], $user->password)) {
+                return response()->json(['message' => 'Current password is incorrect.'], 422);
+            }
+            $user->password = Hash::make($validated['new_password']);
+            /** @var User $user */
+            $user->save();
+            return response()->json(['message' => 'Password updated successfully.']);
+        } catch (\Exception $e) {
+            Log::error('Error occurred while changing password.', [
+                'error_message' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json(['message' => 'An error occurred while changing the password.'], 500);
+        }
     }
 }
