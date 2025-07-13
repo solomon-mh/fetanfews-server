@@ -14,7 +14,7 @@ class MedicationController extends Controller
 
     public function index()
     {
-        return response()->json(Medication::with(['pharmacies', 'category'])->get());
+        return response()->json(Medication::with(['pharmacies', 'category'])->orderBy('created_at', 'desc')->get());
     }
 
     public function create()
