@@ -46,40 +46,36 @@ class AuthController extends Controller
 
     public function login(Request $request): JsonResponse
     {
-        Log::debug('Login attempt', [
-            'ip' => $request->ip(),
-            'user_agent' => $request->userAgent()
-        ]);
-
-        $request->validate([
-            'username' => ['required', 'string'],
-            'password' => ['required', 'string']
-        ]);
-
-        // Determine login field type
-        $fieldType = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
-
-        $user = User::where($fieldType, $request->username)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            Log::warning('Failed login attempt', ['username' => $request->username]);
-            throw ValidationException::withMessages([
-                'username' => [trans('auth.failed')],
+        try {
+            $request->validate([
+                'username' => ['required', 'string'],
+                'password' => ['required', 'string']
             ]);
+
+            // Determine login field type
+            $fieldType = filter_var($request->username, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+            $user = User::where($fieldType, $request->username)->first();
+
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                Log::warning('Failed login attempt', ['username' => $request->username]);
+                throw ValidationException::withMessages([
+                    'username' => [trans('auth.failed')],
+                ]);
+            }
+
+            // Revoke all existing tokens
+            $user->tokens()->delete();
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+            return response()->json([
+                'token_type' => 'Bearer',
+                'token' => $token,
+                'user' => $user->only(['id', 'first_name', 'last_name', 'email', 'role'])
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422); // helpful debug info
         }
-
-        // Revoke all existing tokens
-        $user->tokens()->delete();
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        Log::info('User logged in', ['user_id' => $user->id]);
-
-        return response()->json([
-            'token_type' => 'Bearer',
-            'token' => $token,
-            'user' => $user->only(['id', 'first_name', 'last_name', 'email', 'role'])
-        ]);
     }
 
     public function logout(Request $request): JsonResponse
