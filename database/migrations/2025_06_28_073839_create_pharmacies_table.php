@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
             $table->string('image')->nullable();
-            $table->string('license_number');
+            $table->string('license_number')->unique();
             $table->string('license_image');
             $table->string('status')->default('Pending');
             $table->boolean('is_verified')->default(false);
