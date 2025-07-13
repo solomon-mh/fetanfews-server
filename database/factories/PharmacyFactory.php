@@ -12,7 +12,7 @@ class PharmacyFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => rand(1, 3),
+            'user_id' => $this->faker->unique()->numberBetween(1, 5),
             'name' => $this->faker->company . ' Pharmacy',
             'address' => $this->faker->address,
             'phone' => $this->faker->phoneNumber,
