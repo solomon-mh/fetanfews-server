@@ -10,6 +10,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\MedicationController;
+use App\Http\Controllers\SearchedMedsController;
 use Illuminate\Support\Facades\Log;
 
 // Guest
@@ -43,7 +44,7 @@ Route::post('/debug-auth', function (Request $request) {
 });
 Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'signup']);
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
     Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.store');
 });
@@ -71,26 +72,28 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::prefix('pharmacies')->group(function () {
     Route::get('/', [PharmacyController::class, 'index']);
+    Route::post('/', [PharmacyController::class, 'store'])->middleware('auth:sanctum');
+    Route::put('/{id}', [PharmacyController::class, 'update'])->middleware('auth:sanctum');
     Route::get('/browse_by_categories', [PharmacyController::class, function () {
         return [];
-    }]);
-    Route::get('/most-searched-medications', [PharmacyController::class, function () {
-        return ['Good response'];
     }]);
     Route::get('/nearby', [PharmacyController::class, 'getNearby']);
     Route::get('/counts', [PharmacyController::class, function () {
         return '100';
     }]);
+    Route::get('/by-user/{userId}', [PharmacyController::class, 'getByUser']);
+    Route::get('/get-pharmacy-info', [PharmacyController::class, 'getPharmacyInfo']);
     Route::get('/search', [PharmacyController::class, 'searchPharmacy']);
+    Route::post('/most-searched-medications', [SearchedMedsController::class, 'storeMostSearched']);
+    Route::get('/most-searched-medications', [SearchedMedsController::class, 'getMostSearched']);
     Route::get('/{pharmacy}/medications/search', [PharmacyController::class, 'searchPharmacyMedications']);
     Route::get('/{pharmacy}/medications/{medication}', [PharmacyController::class, 'medicationDetail']);
     Route::get('/{pharmacy}', [PharmacyController::class, 'show']);
-    Route::post('/', [PharmacyController::class, 'store'])->middleware('auth:sanctum');
 });
 // Medications API
 Route::prefix('medications')->group(function () {
-    // Route::post('/', [MedicationController::class, 'store'])->middleware('auth:sanctum');
-    // Route::put('/{medication}', [MedicationController::class, 'update'])->middleware('auth:sanctum');
+    Route::post('/', [MedicationController::class, 'store'])->middleware('auth:sanctum');
+    Route::put('/{medication}', [MedicationController::class, 'update'])->middleware('auth:sanctum');
     Route::get('/', [MedicationController::class, 'index']);
     Route::delete('/{medication}', [MedicationController::class, 'destroy'])->middleware('auth:sanctum');
     Route::get('/counts', [MedicationController::class, function () {
