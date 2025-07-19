@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('pharmacy_id');
             $table->string('name');
+            $table->string('pharmacy_name')->nullable();
             $table->unsignedBigInteger('search_count');
             $table->timestamps();
         });
