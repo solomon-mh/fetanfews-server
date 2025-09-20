@@ -11,6 +11,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\SearchedMedsController;
+use App\Http\Controllers\ChapaController;
 use Illuminate\Support\Facades\Log;
 
 // Guest
@@ -107,4 +108,11 @@ Route::prefix('medications')->group(function () {
 Route::prefix('categories')->group(function () {
     Route::get('/', [CategoryController::class, 'index']);
     Route::post('/', [CategoryController::class, 'store'])->middleware('auth:sanctum');
+});
+
+// Payment API
+Route::post('/pay',[ChapaController::class,'initialize'])->name('pay');
+Route::post('callback/{reference}',[ChapaController::class,'callback'])->name('callback');
+Route::get('/test-chapa', function() {
+    return (config('chapa.secretKey'));
 });
