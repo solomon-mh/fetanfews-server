@@ -10,6 +10,7 @@
 /.nova
 /.phpunit.cache
 /.zed
+temp_auto_push.bat
 /auth.json
 /node_modules
 /public/build
@@ -22,3 +23,4 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 .gitignore
+branch_structure.json
